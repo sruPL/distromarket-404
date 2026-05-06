@@ -70,7 +70,7 @@ const views={
     const r=await api('/api/admin/users');
     el('app').innerHTML=`<div class="card"><h2>Panel admina-ish</h2><p class="alert">${r.warning}</p><pre>${JSON.stringify(r.users,null,2)}</pre></div>`;
   },
-  async scoreboard() {
+async scoreboard() {
   const r = await api('/api/scoreboard');
 
   const solvedCount = r.challenges.filter(c => c.solved).length;
