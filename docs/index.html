@@ -164,3 +164,363 @@
       background: rgba(142,255,155,.12);
       border: 1px solid rgba(142,255,155,.3);
       color: var(--accent);
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+      gap: 18px;
+    }
+
+    .product-icon {
+      font-size: 54px;
+      width: 78px;
+      height: 78px;
+      display: grid;
+      place-items: center;
+      border-radius: 24px;
+      background: #0d1530;
+      margin-bottom: 12px;
+    }
+
+    .price {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--yellow);
+    }
+
+    .alert {
+      border: 1px solid rgba(255,230,109,.4);
+      background: rgba(255,230,109,.08);
+      padding: 14px;
+      border-radius: 18px;
+      margin-bottom: 18px;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      background: #071022;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      overflow: auto;
+    }
+
+    code {
+      background: #071022;
+      border: 1px solid var(--line);
+      padding: 2px 6px;
+      border-radius: 8px;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 28px;
+      border-top: 1px solid var(--line);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media(max-width: 850px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    #home
+      <span class="logo">🐧</span>
+      <span>
+        <strong>DistroMarket 404</strong>
+        <small>GitHub Pages — sruPL</small>
+      </span>
+    </a>
+
+    <nav>
+      #homeStart</a>
+      #productsProdukty</a>
+      #scoreboardScoreboard</a>
+      #docsInstrukcje</a>
+      #reportRaport</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="view">
+      <div class="alert">
+        <strong>Uwaga:</strong> To jest statyczna wersja na GitHub Pages.
+        Prawdziwe podatności działają lokalnie po uruchomieniu backendu przez Docker.
+      </div>
+
+      <div class="hero">
+        <div>
+          <span class="badge">laboratorium pentestów</span>
+          <h1>DistroMarket <span class="gradient">404</span></h1>
+          <p class="muted">
+            Absurdalny sklep z Linuxami, licencjami open-source i subskrypcją sudo.
+            Projekt służy do pokazania testów penetracyjnych aplikacji webowej.
+          </p>
+
+          <div class="row">
+            #productsZobacz produkty</a>
+            #scoreboardZobacz challenge</a>
+            https://github.com/sruPL/distromarket-404Repozytorium</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Uruchomienie prawdziwego labu</h2>
+          <p class="muted">
+            GitHub Pages pokazuje wygląd i dokumentację. Testy SQLi, XSS, brute-force,
+            upload i Broken Access Control wykonuj lokalnie.
+          </p>
+
+          <pre>git clone https://github.com/sruPL/distromarket-404.git
+cd distromarket-404
+docker compose up --build
+
+# aplikacja:
+http://localhost:3000</pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="products" class="view hidden">
+      <h2>Produkty</h2>
+      <p class="muted">
+        Statyczne demo sklepu. Przyciski „Kup demo” tylko udają zakup.
+        Prawdziwe zamówienia i podatności działają w lokalnym backendzie.
+      </p>
+
+      <div class="grid">
+        <article class="card">
+          <div class="product-icon">🧩</div>
+          <span class="badge">Arch</span>
+          <h3>Arch Linux BTW Edition</h3>
+          <p class="muted">Dla osób, które zaczynają każde zdanie od „u mnie działa”.</p>
+          <p class="price">0,00 zł</p>
+          <button class="btn primary" onclick="buyDemo('Arch Linux BTW Edition')">Kup demo</button>
+        </article>
+
+        <article class="card">
+          <div class="product-icon">🌀</div>
+          <span class="badge">Debian</span>
+          <h3>Debian Stable 2031 Preorder</h3>
+          <p class="muted">Dostawa wtedy, gdy będzie naprawdę stabilnie. Czyli spokojnie.</p>
+          <p class="price">29,00 zł</p>
+          <button class="btn primary" onclick="buyDemo('Debian Stable 2031 Preorder')">Kup demo</button>
+        </article>
+
+        <article class="card">
+          <div class="product-icon">🛠️</div>
+          <span class="badge">Gentoo</span>
+          <h3>Gentoo Self-Assembly Kit</h3>
+          <p class="muted">System operacyjny w formie medytacji. W zestawie kawa i make.conf.</p>
+          <p class="price">13,37 zł</p>
+          <button class="btn primary" onclick="buyDemo('Gentoo Self-Assembly Kit')">Kup demo</button>
+        </article>
+
+        <article class="card">
+          <div class="product-icon">🔐</div>
+          <span class="badge">Coreutils</span>
+          <h3>sudo Subscription</h3>
+          <p class="muted">Bez subskrypcji: Permission denied. Z subskrypcją: też, jeśli nie jesteś w sudoers.</p>
+          <p class="price">9,99 zł / miesiąc</p>
+          <button class="btn primary" onclick="buyDemo('sudo Subscription')">Kup demo</button>
+        </article>
+
+        <article class="card">
+          <div class="product-icon">🚪</div>
+          <span class="badge">Vim</span>
+          <h3>Vim Exit Training Course</h3>
+          <p class="muted">Kurs opuszczania edytora. Poziom podstawowy: panika kontrolowana.</p>
+          <p class="price">249,00 zł</p>
+          <button class="btn primary" onclick="buyDemo('Vim Exit Training Course')">Kup demo</button>
+        </article>
+
+        <article class="card">
+          <div class="product-icon">💥</div>
+          <span class="badge">Kernel</span>
+          <h3>Kernel Panic Mystery Box</h3>
+          <p class="muted">Nie wiesz, co kupujesz. My też nie. Ale na pewno ma stack trace.</p>
+          <p class="price">66,60 zł</p>
+          <button class="btn primary" onclick="buyDemo('Kernel Panic Mystery Box')">Kup demo</button>
+        </article>
+
+        <article class="card">
+          <div class="product-icon">📦</div>
+          <span class="badge">Open Source</span>
+          <h3>Open Sourcowy Plik Premium License</h3>
+          <p class="muted">
+            Licencja na korzystanie z pliku README.md, który i tak był dostępny za darmo.
+            W zestawie certyfikat „legalnie klikam open-source”.
+          </p>
+          <p class="price">21,37 zł</p>
+          <button class="btn primary" onclick="buyDemo('Open Sourcowy Plik Premium License')">Kup demo</button>
+        </article>
+
+        <article class="card">
+          <div class="product-icon">🔞</div>
+          <span class="badge">Compliance</span>
+          <h3>Age Verification Bypass</h3>
+          <p class="muted">
+            Dla tych, którzy nie chcą, żeby system operacyjny pytał ich o dowód osobisty,
+            numer buta, zdjęcie legitymacji i imię pierwszego chomika. Produkt demonstracyjny
+            do omawiania ryzyk związanych z weryfikacją wieku, wyciekami danych, kontrolą dostępu
+            i absurdalnym compliance, które brzmi jak phishing, ale ma logo korporacji.
+          </p>
+          <p class="price">18,00 zł</p>
+          <button class="btn primary" onclick="buyDemo('Age Verification Bypass')">Kup demo</button>
+        </article>
+      </div>
+    </section>
+
+    <section id="scoreboard" class="view hidden">
+      <h2>Scoreboard challenge’y</h2>
+      <p class="muted">Te zadania wykonuje się na lokalnej wersji aplikacji z backendem.</p>
+
+      <div class="grid">
+        <article class="card">
+          <span class="badge">SQL Injection</span>
+          <h3>SELECT * FROM godmode</h3>
+          <p class="muted">Omiń logowanie albo wykryj podatny parametr w lokalnym labie.</p>
+        </article>
+
+        <article class="card">
+          <span class="badge">XSS</span>
+          <h3>Alertowy Wojownik</h3>
+          <p class="muted">Pokaż reflected albo stored XSS w kontrolowanym środowisku.</p>
+        </article>
+
+        <article class="card">
+          <span class="badge">Brute-force</span>
+          <h3>Hasło: hasło</h3>
+          <p class="muted">Wykaż brak rate limitingu na endpointcie logowania.</p>
+        </article>
+
+        <article class="card">
+          <span class="badge">File Upload</span>
+          <h3>Uploadowa Ruletka</h3>
+          <p class="muted">Sprawdź brak walidacji uploadowanych plików.</p>
+        </article>
+
+        <article class="card">
+          <span class="badge">Broken Access Control</span>
+          <h3>Admin z przypadku</h3>
+          <p class="muted">Sprawdź IDOR oraz dostęp do panelu admina bez roli admina.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="docs" class="view hidden">
+      <h2>Instrukcja dla projektu</h2>
+
+      <div class="card">
+        <h3>1. Uruchomienie lokalne</h3>
+        <pre>git clone https://github.com/sruPL/distromarket-404.git
+cd distromarket-404
+docker compose up --build</pre>
+
+        <h3>2. Adres aplikacji</h3>
+        <pre>http://localhost:3000</pre>
+
+        <h3>3. Konta testowe</h3>
+        <pre>admin@distromarket.local : admin123
+tux@distromarket.local   : penguin
+linus@distromarket.local : kernel
+kasia@distromarket.local : qwerty123</pre>
+
+        <h3>4. Testy wykonujemy tylko lokalnie</h3>
+        <p class="muted">
+          Nie testujemy cudzych systemów. GitHub Pages służy tylko jako strona informacyjna i demo wizualne.
+        </p>
+      </div>
+    </section>
+
+    <section id="report" class="view hidden">
+      <h2>Plan raportu</h2>
+
+      <div class="card">
+        <p>Raport powinien zawierać:</p>
+
+        <ol>
+          <li>Określenie celów testów.</li>
+          <li>Zakres testów.</li>
+          <li>Zebranie informacji.</li>
+          <li>Wybraną metodykę, np. OWASP WSTG / OWASP Top 10.</li>
+          <li>Użyte narzędzia: Burp Suite, OWASP ZAP, sqlmap, Hydra, ffuf, curl.</li>
+          <li>Scenariusze ataku.</li>
+          <li>Eksploatację podatności.</li>
+          <li>Kryteria zakończenia testów.</li>
+          <li>Analizę posteksploatacyjną.</li>
+          <li>Rekomendacje naprawy.</li>
+          <li>Monitorowanie i weryfikację poprawek.</li>
+        </ol>
+
+        <h3>Podatności do opisania</h3>
+        <pre>SQL Injection
+Cross-Site Scripting
+Brute-force
+File Upload
+Broken Access Control</pre>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Adres GitHub Pages po publikacji:</p>
+    <code>https://sruPL.github.io/distromarket-404/</code>
+    <p>⚠️ Projekt edukacyjny. Testy tylko na własnej instancji.</p>
+  </footer>
+
+  <script>
+    function buyDemo(productName) {
+      alert(
+        "Dodano do koszyka demo: " + productName + "\n\n" +
+        "To jest statyczna wersja GitHub Pages. " +
+        "Prawdziwe zamówienia i podatności działają lokalnie po uruchomieniu backendu."
+      );
+    }
+
+    function showView() {
+      const hash = location.hash.replace("#", "") || "home";
+      const views = document.querySelectorAll(".view");
+
+      views.forEach(view => {
+        view.classList.add("hidden");
+      });
+
+      const active = document.getElementById(hash);
+
+      if (active) {
+        active.classList.remove("hidden");
+      } else {
+        document.getElementById("home").classList.remove("hidden");
+      }
+    }
+
+    window.addEventListener("hashchange", showView);
+    showView();
+  </script>
+</body>
+</html>
