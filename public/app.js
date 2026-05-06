@@ -1,5 +1,17 @@
 const API = '';
-const icons = { arch:'🧩', debian:'🌀', gentoo:'🛠️', ubuntu:'🟠', sudo:'🔐', vim:'🚪', kernel:'💥', license:'📜' };
+const icons = {
+  arch: '🧩',
+  debian: '🌀',
+  gentoo: '🛠️',
+  ubuntu: '🟠',
+  sudo: '🔐',
+  vim: '🚪',
+  kernel: '💥',
+  license: '📜',
+  package: '📦',
+  age: '🔞'
+};
+
 let state = { user:null, products:[] };
 
 async function api(path, options={}){
