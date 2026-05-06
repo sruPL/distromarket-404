@@ -92,11 +92,11 @@ const products = [
     2137
   ],
   [
-    'Age Verification Bypass Simulator',
+    'Age Verification Bypass',
     'Compliance',
     18.00,
     'age',
-    'Symulator edukacyjny do omawiania problemów z kontrolą dostępu i błędną weryfikacją wieku. Nie obchodzi niczego naprawdę, tylko udaje, że jest dorosły.',
+    'Jeżeli nie masz 18 lat albo nie chcesz, żeby Ubuntu skanował Twoje dokumenty i później z zleakował do darknetu bo nie były zaszyfrowane, to właśnie tego potrzebujesz! Musisz nam tylko przesłać swoje zdjęcie, numer PESEL i skan dowodu osobistego, a my obejdziemy Age Verification za Ciebie.',
     18
   ]
 ];
