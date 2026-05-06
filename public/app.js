@@ -12,7 +12,44 @@ const icons = {
   age: '🔞'
 };
 
-let state = { user:null, products:[] };
+let state = { user:null, products:[], notifiedChallenges:new Set() };
+
+function showNotification(challenge) {
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.innerHTML = `
+    <div class="notificationContent">
+      <strong>🎉 Challenge odblokowany!</strong>
+      <h3>${challenge.name}</h3>
+      <p>${challenge.category}</p>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.classList.add('show');
+  }, 10);
+  
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => notification.remove(), 300);
+  }, 4000);
+}
+
+async function checkForNewChallenges() {
+  try {
+    const r = await api('/api/scoreboard');
+    r.challenges.forEach(c => {
+      if (c.solved && !state.notifiedChallenges.has(c.id)) {
+        state.notifiedChallenges.add(c.id);
+        showNotification(c);
+      }
+    });
+  } catch (err) {
+    console.error('Error checking challenges:', err);
+  }
+}
 
 async function api(path, options={}){
   const res = await fetch(API+path, { credentials:'include', headers:{'Content-Type':'application/json', ...(options.headers||{})}, ...options });
@@ -84,4 +121,4 @@ async function review(e,id){e.preventDefault(); const f=new FormData(e.target); 
 async function buy(id){ if(!state.user){location.hash='#/login'; return;} const r=await api('/api/orders',{method:'POST',body:JSON.stringify({productId:id,quantity:1})}); alert(r.message+' ID: '+r.orderId); location.hash='#/order/'+r.orderId; }
 async function uploadFile(e){e.preventDefault(); const fd=new FormData(e.target); const res=await fetch('/api/upload-license-proof',{method:'POST',credentials:'include',body:fd}); const data=await res.json(); el('uploadOut').textContent=JSON.stringify(data,null,2);}
 async function router(){ await loadMe(); const h=location.hash||'#/'; const [path]=h.slice(2).split('?'); const parts=path.split('/').filter(Boolean); try{ if(!parts.length) return views.home(); if(parts[0]==='products') return views.products(); if(parts[0]==='product') return views.product(parts[1]); if(parts[0]==='login') return views.login(); if(parts[0]==='orders') return views.orders(); if(parts[0]==='order') return views.order(parts[1]); if(parts[0]==='upload') return views.upload(); if(parts[0]==='admin') return views.admin(); if(parts[0]==='scoreboard') return views.scoreboard(); if(parts[0]==='docs') return views.docs(); return views.home(); }catch(err){ el('app').innerHTML=`<div class="card"><h2>Ups, kernel panic</h2><pre>${JSON.stringify(err,null,2)}</pre></div>`; } }
-window.addEventListener('hashchange',router); router();
+window.addEventListener('hashchange',router); router(); setInterval(checkForNewChallenges, 2000);
