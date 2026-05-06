@@ -470,6 +470,28 @@ app.post('/api/upload-license-proof', requireLogin, upload.single('proof'), (req
     });
   }
 
+  // Achievement za file upload.
+  // W tej aplikacji podatność polega na tym, że backend przyjmuje pliki bez sensownej walidacji.
+  solveChallenge('file-upload');
+
+  db.prepare(`
+    INSERT INTO uploads (userId, originalName, fileName, mimeType)
+    VALUES (?, ?, ?, ?)
+  `).run(
+    req.user.id,
+    req.file.originalname,
+    req.file.filename,
+    req.file.mimetype
+  );
+
+  res.json({
+    message: 'Plik przesłany. Ufamy społeczności open-source, więc prawie niczego nie sprawdziliśmy.',
+    achievement: 'file-upload',
+    url: `/uploads/${req.file.filename}`,
+    file: req.file
+  });
+});
+
   if (isSuspiciousUpload(req.file)) {
     solveChallenge('file-upload');
   }
