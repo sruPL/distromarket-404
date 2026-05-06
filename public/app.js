@@ -70,10 +70,37 @@ const views={
     const r=await api('/api/admin/users');
     el('app').innerHTML=`<div class="card"><h2>Panel admina-ish</h2><p class="alert">${r.warning}</p><pre>${JSON.stringify(r.users,null,2)}</pre></div>`;
   },
-  async scoreboard(){
-    const r=await api('/api/scoreboard');
-    el('app').innerHTML=`<div class="card"><h2>Scoreboard</h2><p class="muted">Checklist do ćwiczeń. Status uzupełnia prowadzący/tester w raporcie.</p><div class="grid">${r.challenges.map(c=>`<div class="card"><span class="badge">${c.category}</span><h3>${c.name}</h3><p>${c.goal}</p></div>`).join('')}</div></div>`;
-  },
+  async scoreboard() {
+  const r = await api('/api/scoreboard');
+
+  const solvedCount = r.challenges.filter(c => c.solved).length;
+  const totalCount = r.challenges.length;
+
+  el('app').innerHTML = `
+    <div class="card">
+      <h2>Scoreboard</h2>
+      <p class="muted">
+        Automatyczny scoreboard challenge’y.
+        Rozwiązane: <strong>${solvedCount}/${totalCount}</strong>
+      </p>
+
+      <div class="grid">
+        ${r.challenges.map(c => `
+          <div class="card ${c.solved ? 'challengeSolved' : ''}">
+            <span class="badge">${c.category}</span>
+            <h3>${c.solved ? '✅ ' : '⬜ '} ${c.name}</h3>
+            <p>${c.goal}</p>
+            <p class="muted">
+              Status:
+              <strong>${c.solved ? 'Zrobione' : 'Do zrobienia'}</strong>
+            </p>
+            ${c.solvedAt ? `<p class="muted">Odblokowano: ${c.solvedAt}</p>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
   async docs(){
     el('app').innerHTML=`<div class="card"><h2>Instrukcje</h2><p>Pełna dokumentacja jest w katalogu <code>docs/</code> repozytorium:</p><ul><li><code>docs/01_uruchomienie.md</code></li><li><code>docs/02_plan_testow_penetracyjnych.md</code></li><li><code>docs/03_scenariusze_testowe.md</code></li><li><code>docs/04_szablon_raportu.md</code></li><li><code>docs/05_remediacja.md</code></li></ul><p class="alert">Zakres testów: wyłącznie własna instancja DistroMarket 404.</p></div>`;
   }
