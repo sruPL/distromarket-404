@@ -12,7 +12,7 @@ const icons = {
   age: '🔞'
 };
 
-let state = { user:null, products:[], notifiedChallenges:new Set() };
+let state = { user:null, products:[], notifiedChallenges:new Set(), challengesInitialized:false };
 
 function showNotification(challenge) {
   const notification = document.createElement('div');
@@ -40,12 +40,22 @@ function showNotification(challenge) {
 async function checkForNewChallenges() {
   try {
     const r = await api('/api/scoreboard');
+
     r.challenges.forEach(c => {
-      if (c.solved && !state.notifiedChallenges.has(c.id)) {
+      if (!c.solved) return;
+
+      if (!state.challengesInitialized) {
+        state.notifiedChallenges.add(c.id);
+        return;
+      }
+
+      if (!state.notifiedChallenges.has(c.id)) {
         state.notifiedChallenges.add(c.id);
         showNotification(c);
       }
     });
+
+    state.challengesInitialized = true;
   } catch (err) {
     console.error('Error checking challenges:', err);
   }
