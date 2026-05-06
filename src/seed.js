@@ -2,6 +2,12 @@ const { db, initDb } = require('./db');
 initDb();
 
 db.exec(`
+  CREATE TABLE IF NOT EXISTS challenge_solutions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    challengeId TEXT UNIQUE NOT NULL,
+    solvedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
   DELETE FROM challenge_solutions;
   DELETE FROM uploads;
   DELETE FROM orders;
