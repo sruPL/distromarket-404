@@ -2,6 +2,7 @@ const { db, initDb } = require('./db');
 initDb();
 
 db.exec(`
+  DELETE FROM challenge_solutions;
   DELETE FROM uploads;
   DELETE FROM orders;
   DELETE FROM reviews;
