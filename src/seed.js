@@ -19,14 +19,86 @@ const insertUser = db.prepare('INSERT INTO users (email, password, role, display
 users.forEach(u => insertUser.run(...u));
 
 const products = [
-  ['Arch Linux BTW Edition', 'Arch', 0.00, 'arch', 'Dla osób, które zaczynają każde zdanie od „u mnie działa”. Opłata manipulacyjna naliczana w punktach ego.', 7],
-  ['Debian Stable 2031 Preorder', 'Debian', 29.00, 'debian', 'Dostawa wtedy, gdy będzie naprawdę stabilnie. Czyli spokojnie.', 3],
-  ['Gentoo Self-Assembly Kit', 'Gentoo', 13.37, 'gentoo', 'System operacyjny w formie medytacji. W zestawie świeczka, kawa i make.conf.', 2],
-  ['Ubuntu Pro Max Ultra Home Deluxe', 'Ubuntu', 99.99, 'ubuntu', 'Zawiera tapetę premium i komunikat, że aktualizacja jest dostępna. Zawsze.', 42],
-  ['sudo Subscription', 'Coreutils', 9.99, 'sudo', 'Bez subskrypcji: Permission denied. Z subskrypcją: też, jeśli nie jesteś w sudoers.', 999],
-  ['Vim Exit Training Course', 'Vim', 249.00, 'vim', 'Kurs opuszczania edytora. Poziom podstawowy: panika kontrolowana.', 5],
-  ['Kernel Panic Mystery Box', 'Kernel', 66.60, 'kernel', 'Nie wiesz co kupujesz. My też nie. Ale na pewno ma stack trace.', 13],
-  ['Open Source License Gold™', 'Legal', 404.00, 'license', 'Zapłać za coś darmowego i poczuj kapitalizm w terminalu.', 1]
+  [
+    'Arch Linux BTW Edition',
+    'Arch',
+    0.00,
+    'arch',
+    'Dla osób, które zaczynają każde zdanie od „u mnie działa”. Opłata manipulacyjna naliczana w punktach ego.',
+    7
+  ],
+  [
+    'Debian Stable 2031 Preorder',
+    'Debian',
+    29.00,
+    'debian',
+    'Dostawa wtedy, gdy będzie naprawdę stabilnie. Czyli spokojnie.',
+    3
+  ],
+  [
+    'Gentoo Self-Assembly Kit',
+    'Gentoo',
+    13.37,
+    'gentoo',
+    'System operacyjny w formie medytacji. W zestawie świeczka, kawa i make.conf.',
+    2
+  ],
+  [
+    'Ubuntu Pro Max Ultra Home Deluxe',
+    'Ubuntu',
+    99.99,
+    'ubuntu',
+    'Zawiera tapetę premium i komunikat, że aktualizacja jest dostępna. Zawsze.',
+    42
+  ],
+  [
+    'sudo Subscription',
+    'Coreutils',
+    9.99,
+    'sudo',
+    'Bez subskrypcji: Permission denied. Z subskrypcją: też, jeśli nie jesteś w sudoers.',
+    999
+  ],
+  [
+    'Vim Exit Training Course',
+    'Vim',
+    249.00,
+    'vim',
+    'Kurs opuszczania edytora. Poziom podstawowy: panika kontrolowana.',
+    5
+  ],
+  [
+    'Kernel Panic Mystery Box',
+    'Kernel',
+    66.60,
+    'kernel',
+    'Nie wiesz co kupujesz. My też nie. Ale na pewno ma stack trace.',
+    13
+  ],
+  [
+    'Open Source License Gold™',
+    'Legal',
+    404.00,
+    'license',
+    'Zapłać za coś darmowego i poczuj kapitalizm w terminalu.',
+    1
+  ],
+  [
+    'Open Sourcowy Plik Premium License',
+    'Open Source',
+    21.37,
+    'package',
+    'Licencja na korzystanie z pliku README.md, który i tak był dostępny za darmo. W zestawie certyfikat „legalnie klikam open-source”.',
+    2137
+  ],
+  [
+    'Age Verification Bypass Simulator',
+    'Compliance',
+    18.00,
+    'age',
+    'Symulator edukacyjny do omawiania problemów z kontrolą dostępu i błędną weryfikacją wieku. Nie obchodzi niczego naprawdę, tylko udaje, że jest dorosły.',
+    18
+  ]
 ];
 const insertProduct = db.prepare('INSERT INTO products (name, distro, price, image, description, stock) VALUES (?, ?, ?, ?, ?, ?)');
 products.forEach(p => insertProduct.run(...p));
