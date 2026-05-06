@@ -19,7 +19,7 @@ Motyw: absurdalny sklep z Linuxami, płatnymi licencjami open-source i subskrypc
 ### Docker
 
 ```bash
-git clone https://github.com/TWOJ_LOGIN/distromarket-404.git
+git clone https://github.com/sruPL/distromarket-404.git
 cd distromarket-404
 docker compose up --build
 ```
