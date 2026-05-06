@@ -10,11 +10,6 @@ const { db, initDb } = require('./db');
 
 initDb();
 
-/**
- * Dodatkowa tabela scoreboardu.
- * Tworzymy ją tutaj również defensywnie, żeby aplikacja działała nawet,
- * jeśli ktoś jeszcze nie dopisał jej w src/db.js.
- */
 db.exec(`
   CREATE TABLE IF NOT EXISTS challenge_solutions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,18 +40,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-/**
- * INTENCJONALNIE PODATNE:
- * Publiczny katalog uploadów.
- */
 app.use('/uploads', express.static(uploadsDir));
-
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-/**
- * Prosty licznik nieudanych logowań do challenge'a brute-force.
- * Wystarczy do demo. Po restarcie serwera licznik się zeruje.
- */
 const failedLoginAttempts = {};
 
 function signUser(user) {
@@ -97,10 +83,6 @@ function requireLogin(req, res, next) {
   req.user = user;
   next();
 }
-
-/**
- * SCOREBOARD HELPERS
- */
 
 function solveChallenge(challengeId) {
   try {
@@ -145,25 +127,6 @@ function looksLikeXss(value = '') {
   );
 }
 
-function isSuspiciousUpload(file) {
-  if (!file) return false;
-
-  const name = String(file.originalname || '').toLowerCase();
-  const mime = String(file.mimetype || '').toLowerCase();
-
-  return (
-    name.endsWith('.html') ||
-    name.endsWith('.htm') ||
-    name.endsWith('.js') ||
-    name.endsWith('.php') ||
-    name.endsWith('.sh') ||
-    name.endsWith('.txt') ||
-    mime.includes('html') ||
-    mime.includes('javascript') ||
-    mime.includes('text/plain')
-  );
-}
-
 /**
  * AUTH
  *
@@ -203,10 +166,6 @@ app.post('/api/login', (req, res) => {
 
     const token = signUser(user);
 
-    /**
-     * INTENCJONALNIE SŁABE:
-     * httpOnly: false, żeby można było omawiać ryzyka XSS/tokenów w labie.
-     */
     res.cookie('token', token, {
       httpOnly: false,
       sameSite: 'lax'
@@ -251,10 +210,6 @@ app.get('/api/products', (req, res) => {
       solveChallenge('xss-review');
     }
 
-    /**
-     * INTENCJONALNIE PODATNE:
-     * SQL Injection w wyszukiwarce.
-     */
     const query = `
       SELECT *
       FROM products
@@ -457,10 +412,6 @@ const storage = multer.diskStorage({
   }
 });
 
-/**
- * INTENCJONALNIE PODATNE:
- * Brak limitów i prawdziwej walidacji typu pliku.
- */
 const upload = multer({ storage });
 
 app.post('/api/upload-license-proof', requireLogin, upload.single('proof'), (req, res) => {
@@ -470,8 +421,6 @@ app.post('/api/upload-license-proof', requireLogin, upload.single('proof'), (req
     });
   }
 
-  // Achievement za file upload.
-  // W tej aplikacji podatność polega na tym, że backend przyjmuje pliki bez sensownej walidacji.
   solveChallenge('file-upload');
 
   db.prepare(`
@@ -487,27 +436,6 @@ app.post('/api/upload-license-proof', requireLogin, upload.single('proof'), (req
   res.json({
     message: 'Plik przesłany. Ufamy społeczności open-source, więc prawie niczego nie sprawdziliśmy.',
     achievement: 'file-upload',
-    url: `/uploads/${req.file.filename}`,
-    file: req.file
-  });
-});
-
-  if (isSuspiciousUpload(req.file)) {
-    solveChallenge('file-upload');
-  }
-
-  db.prepare(`
-    INSERT INTO uploads (userId, originalName, fileName, mimeType)
-    VALUES (?, ?, ?, ?)
-  `).run(
-    req.user.id,
-    req.file.originalname,
-    req.file.filename,
-    req.file.mimetype
-  );
-
-  res.json({
-    message: 'Plik przesłany. Ufamy społeczności open-source, więc prawie niczego nie sprawdziliśmy.',
     url: `/uploads/${req.file.filename}`,
     file: req.file
   });
