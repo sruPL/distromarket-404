@@ -1,0 +1,13 @@
+services:
+  distromarket:
+    build: .
+    container_name: distromarket-404
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=lab
+      - PORT=3000
+      - JWT_SECRET=dev-only-super-secret-change-me
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
