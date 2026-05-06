@@ -13,10 +13,15 @@ const icons = {
 };
 
 let state = { user:null, products:[], notifiedChallenges:new Set(), challengesInitialized:false };
+let activeNotifications = 0;
 
 function showNotification(challenge) {
   const notification = document.createElement('div');
   notification.className = 'notification';
+  notification.style.top = `${20 + activeNotifications * 120}px`;
+
+  activeNotifications++;
+
   notification.innerHTML = `
     <div class="notificationContent">
       <strong>🎉 Challenge odblokowany!</strong>
@@ -33,7 +38,10 @@ function showNotification(challenge) {
   
   setTimeout(() => {
     notification.classList.remove('show');
-    setTimeout(() => notification.remove(), 300);
+    setTimeout(() => {
+      notification.remove();
+      activeNotifications = Math.max(0, activeNotifications - 1);
+    }, 300);
   }, 4000);
 }
 
