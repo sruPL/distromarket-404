@@ -34,16 +34,10 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-app.use(cors({ origin: true, credentials: true }));
-app.use(morgan('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-
-app.use('/uploads', express.static(uploadsDir));
-app.use(express.static(path.join(__dirname, '..', 'public')));
-
 const failedLoginAttempts = {};
+const reconState = new Map();
+
+/* ===================== AUTH HELPERS ===================== */
 
 function signUser(user) {
   return jwt.sign(
@@ -83,6 +77,8 @@ function requireLogin(req, res, next) {
   req.user = user;
   next();
 }
+
+/* ===================== SCOREBOARD HELPERS ===================== */
 
 function solveChallenge(challengeId) {
   try {
@@ -127,12 +123,76 @@ function looksLikeXss(value = '') {
   );
 }
 
-/**
- * AUTH
- *
- * INTENCJONALNIE PODATNE:
- * SQL Injection przez konkatenację danych użytkownika.
- */
+/* ===================== RECON DETECTION ===================== */
+
+function getClientKey(req) {
+  return req.ip || req.socket.remoteAddress || 'unknown';
+}
+
+function track404Burst(req) {
+  const key = getClientKey(req);
+  const now = Date.now();
+
+  if (!reconState.has(key)) {
+    reconState.set(key, []);
+  }
+
+  const hits = reconState
+    .get(key)
+    .filter(ts => now - ts < 10000);
+
+  hits.push(now);
+  reconState.set(key, hits);
+
+  if (hits.length >= 8) {
+    solveChallenge('recon-content-discovery');
+  }
+}
+
+function detectReconMiddleware(req, res, next) {
+  const ua = String(req.headers['user-agent'] || '').toLowerCase();
+
+  if (
+    ua.includes('nmap') ||
+    ua.includes('nmap scripting engine')
+  ) {
+    solveChallenge('recon-nmap');
+  }
+
+  if (
+    ua.includes('ffuf') ||
+    ua.includes('fuzz faster') ||
+    ua.includes('gobuster') ||
+    ua.includes('dirbuster') ||
+    ua.includes('dirb')
+  ) {
+    solveChallenge('recon-content-discovery');
+  }
+
+  res.on('finish', () => {
+    if (res.statusCode === 404) {
+      track404Burst(req);
+    }
+  });
+
+  next();
+}
+
+/* ===================== MIDDLEWARE ===================== */
+
+app.use(cors({ origin: true, credentials: true }));
+app.use(morgan('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.use(detectReconMiddleware);
+
+app.use('/uploads', express.static(uploadsDir));
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+/* ===================== AUTH ===================== */
+
 app.post('/api/login', (req, res) => {
   const { email = '', password = '' } = req.body;
 
@@ -195,9 +255,8 @@ app.get('/api/me', (req, res) => {
   });
 });
 
-/**
- * PRODUCTS
- */
+/* ===================== PRODUCTS ===================== */
+
 app.get('/api/products', (req, res) => {
   const q = req.query.q;
 
@@ -257,12 +316,8 @@ app.get('/api/products/:id', (req, res) => {
   });
 });
 
-/**
- * REVIEWS
- *
- * INTENCJONALNIE PODATNE:
- * Stored XSS — recenzja zapisywana bez sanityzacji.
- */
+/* ===================== REVIEWS ===================== */
+
 app.post('/api/products/:id/reviews', (req, res) => {
   const { author = 'anon', body = '' } = req.body;
 
@@ -280,9 +335,8 @@ app.post('/api/products/:id/reviews', (req, res) => {
   });
 });
 
-/**
- * ORDERS
- */
+/* ===================== ORDERS ===================== */
+
 app.post('/api/orders', requireLogin, (req, res) => {
   const { productId, quantity = 1 } = req.body;
 
@@ -315,10 +369,6 @@ app.post('/api/orders', requireLogin, (req, res) => {
   });
 });
 
-/**
- * INTENCJONALNIE PODATNE:
- * IDOR/Broken Access Control — każdy zalogowany może zobaczyć dowolne zamówienie po ID.
- */
 app.get('/api/orders/:id', requireLogin, (req, res) => {
   const order = db.prepare(`
     SELECT
@@ -364,12 +414,8 @@ app.get('/api/my-orders', requireLogin, (req, res) => {
   });
 });
 
-/**
- * ADMIN
- *
- * INTENCJONALNIE PODATNE:
- * Endpoint admina sprawdza tylko logowanie, ale nie sprawdza roli.
- */
+/* ===================== ADMIN ===================== */
+
 app.get('/api/admin/users', requireLogin, (req, res) => {
   if (req.user.role !== 'admin') {
     solveChallenge('admin-bac');
@@ -385,10 +431,6 @@ app.get('/api/admin/users', requireLogin, (req, res) => {
   });
 });
 
-/**
- * INTENCJONALNIE PODATNE:
- * Dowolny zalogowany użytkownik może zmienić rolę dowolnego konta.
- */
 app.post('/api/admin/users/:id/role', requireLogin, (req, res) => {
   const { role = 'user' } = req.body;
 
@@ -400,9 +442,8 @@ app.post('/api/admin/users/:id/role', requireLogin, (req, res) => {
   });
 });
 
-/**
- * FILE UPLOAD
- */
+/* ===================== FILE UPLOAD ===================== */
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadsDir);
@@ -451,9 +492,8 @@ app.get('/api/uploads', requireLogin, (req, res) => {
   });
 });
 
-/**
- * SCOREBOARD
- */
+/* ===================== SCOREBOARD ===================== */
+
 app.get('/api/scoreboard', (req, res) => {
   const solvedRows = db.prepare(`
     SELECT challengeId, solvedAt
@@ -465,6 +505,18 @@ app.get('/api/scoreboard', (req, res) => {
   );
 
   const challenges = [
+    {
+      id: 'recon-nmap',
+      name: 'Portowy Pingwin',
+      category: 'Recon',
+      goal: 'Wykryj usługę aplikacji za pomocą skanowania nmap.'
+    },
+    {
+      id: 'recon-content-discovery',
+      name: 'Katalogowy Detektyw',
+      category: 'Recon',
+      goal: 'Wykonaj enumerację endpointów za pomocą ffuf albo gobuster.'
+    },
     {
       id: 'sqli-login',
       name: 'SELECT * FROM godmode',
@@ -512,9 +564,22 @@ app.get('/api/scoreboard', (req, res) => {
   });
 });
 
-/**
- * Fallback SPA
+/*
+ * Nieznane endpointy API powinny dawać 404.
+ * To pomaga wykrywać content discovery przez ffuf/gobuster po serii błędów 404.
  */
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
+    return res.status(404).json({
+      error: 'Nie znaleziono zasobu. Pingwin wzruszył ramionami.'
+    });
+  }
+
+  next();
+});
+
+/* ===================== FALLBACK SPA ===================== */
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
