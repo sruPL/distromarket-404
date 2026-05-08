@@ -1,67 +1,6 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
-const multer = require('multer');
-const jwt = require('jsonwebtoken');
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
-const morgan = require('morgan');
-const { db, initDb } = require('./db');
-
-initDb();
-
-db.exec(`
-  CREATE TABLE IF NOT EXISTS challenge_solutions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    challengeId TEXT UNIQUE NOT NULL,
-    solvedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-  );
-`);
-
-try {
-  const count = db.prepare('SELECT COUNT(*) AS c FROM users').get().c;
-  if (count === 0) require('./seed');
-} catch (e) {
-  console.error('Błąd inicjalizacji danych:', e.message);
-}
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-only-super-secret-change-me';
-
-const uploadsDir = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const failedLoginAttempts = {};
-const reconState = new Map();
-
-/* ===================== AUTH HELPERS ===================== */
-
-function signUser(user) {
-  return jwt.sign(
-    {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      displayName: user.displayName
-    },
-    JWT_SECRET,
-    { expiresIn: '2h' }
-  );
-}
-
-function getCurrentUser(req) {
-  const header = req.headers.authorization || '';
-  const token = req.cookies.token || header.replace('Bearer ', '');
-
-  if (!token) return null;
-
-  try {
-    return jwt.verify(token, JWT_SECRET);
-  } catch {
-    return null;
+;const fs = require('fs');
   }
 }
 
@@ -588,3 +527,63 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`DistroMarket 404 działa na http://localhost:${PORT}`);
   console.log('UWAGA: to jest celowo podatna aplikacja laboratoryjna. Nie wystawiaj publicznie.');
 });
+const multer = require('multer');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
+const morgan = require('morgan');
+const { db, initDb } = require('./db');
+
+initDb();
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS challenge_solutions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    challengeId TEXT UNIQUE NOT NULL,
+    solvedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+try {
+  const count = db.prepare('SELECT COUNT(*) AS c FROM users').get().c;
+  if (count === 0) require('./seed');
+} catch (e) {
+  console.error('Błąd inicjalizacji danych:', e.message);
+}
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-only-super-secret-change-me';
+
+const uploadsDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const failedLoginAttempts = {};
+const reconState = new Map();
+
+/* ===================== AUTH HELPERS ===================== */
+
+function signUser(user) {
+  return jwt.sign(
+    {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      displayName: user.displayName
+    },
+    JWT_SECRET,
+    { expiresIn: '2h' }
+  );
+}
+
+function getCurrentUser(req) {
+  const header = req.headers.authorization || '';
+  const token = req.cookies.token || header.replace('Bearer ', '');
+
+  if (!token) return null;
+
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch {
