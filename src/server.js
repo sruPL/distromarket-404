@@ -1,4 +1,4 @@
-cat > src/server.js <<'EOF'
+
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
@@ -589,4 +589,4 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`DistroMarket 404 działa na http://localhost:${PORT}`);
   console.log('UWAGA: to jest celowo podatna aplikacja laboratoryjna. Nie wystawiaj publicznie.');
 });
-EOF
+
